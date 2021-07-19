@@ -55,8 +55,14 @@ def verify_timeout(get_cursor, full_auth_client):
                 for k, v in RESPONSE_TIMES.items():
                     response_info += f'correlationId: {k}, {v}\n'
                     total += v
-
-            av: float = total / pages
+            av: float
+            try:
+                av: float = total / pages
+            except ZeroDivisionError as e:
+                logger.error("IGNORING DIV BY ZERO")
+                logger.error(e)
+                logger.error(RESPONSE_TIMES)
+                continue
             if hasMore:
                 after = metadata['after']
                 cursor = str(metadata['cursor'])
@@ -72,7 +78,7 @@ def verify_timeout(get_cursor, full_auth_client):
                 except FileNotFoundError as e:
                     raise
 
-                logger.info(f"Page: {pages}, response time: {response_time} ")
+                #logger.info(f"Page: {pages}, response time: {response_time} ")
 
         except BaseException as e:
             msg = f"""" 
@@ -80,10 +86,10 @@ def verify_timeout(get_cursor, full_auth_client):
             CURSOR START: {cursor_return_time}
             CURSOR END: {datetime.utcnow()}
             -------------
+            Average: {av} seconds / page
+            
             Response Times:
             {response_info}
-
-            Average: {av} seconds / page
             
             ERROR: {e}
             """

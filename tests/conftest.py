@@ -148,12 +148,13 @@ def end_beyond_today(full_auth_client):
     start_time = start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     end_time = today + timedelta(weeks=1)
     end_time = end_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    info = f"""(
+                   lastUpdate:{{
+                       startTime: "{start_time}"
+                       endTime: "{end_time}"
+                   }}
+               )"""
 
-    info = f"""
-               startTime: "{start_time}"
-               endTime: "{end_time}"
-           """
-    logger.debug(info)
-    response = full_auth_client.execute(get_query(variable='lastUpdate', input=info))
+    response = full_auth_client.execute(get_query(input_text=info))
 
     return response, start_time, end_time
