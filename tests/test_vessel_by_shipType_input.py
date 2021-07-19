@@ -7,13 +7,14 @@ import pytest_check as check
 
 DATA: list = list()
 
-
+@pytest.mark.skip
 @pytest.mark.long
 @pytest.mark.positive_test
 @scenario(scenario_name='Execute a query for one or more shipType(s)',
           feature_name="vessel_by_shipType_input.feature")
 def test_ship_type_input():
     pass
+
 
 
 @pytest.fixture

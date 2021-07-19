@@ -7,6 +7,7 @@ import pytest_check as check
 FLAGS = ["UZ", "ES", "TW", "CN", "US"]
 
 
+@pytest.mark.skip
 @pytest.mark.positive_test
 @pytest.mark.short
 @pytest.mark.smoke_test
