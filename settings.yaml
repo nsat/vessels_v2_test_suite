@@ -1,0 +1,16 @@
+#endpoint_under_test: 'https://staphql.ais.spire.com/'
+endpoint_under_test: 'https://api.staging.maritime.spire.sh/federation-gateway' # federated staging
+full_access_token: 'k6qLvUxATNeqOJw957NhYhfr6iIQCfWX'
+# Location to write test results
+gcp_dataset_id: 'test_results_dataset'
+gcp_table_id: 'test_results'
+gcp_project_id: 'ais-data-analysis'
+# Location to write data captured by tests
+captured_data_dataset_id: 'test_captured_data'
+captured_data_table_id: 'vessels_captured_data_from_tests'
+# pytest_xml_report_path: 'result.xml'
+pytest_xml_report_path: 'home/brucebookman/TESTSTOBQ/result.xml'
+
+product_under_test: 'VESSELS'
+product_version_under_test: '2.0'
+in_v1_not_v2_log: 'in_v1_not_v2.log'
