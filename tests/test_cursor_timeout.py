@@ -7,7 +7,7 @@ import csv
 
 RESPONSE_TIMES: dict = dict()
 
-
+@pytest.mark.skip
 @pytest.mark.long
 @pytest.mark.positive_test
 @pytest.mark.smoke_test
@@ -39,7 +39,7 @@ def verify_timeout(get_cursor, full_auth_client):
     while hasMore:
         try:
             pages += 1
-            logger.debug(f"PAGE: {pages}")
+            # logger.debug(f"PAGE: {pages}")
             start_time = datetime.now()
             input_text = f'(_after: "{after}" _cursor: "{cursor}")'
             response = full_auth_client.execute(get_query(input_text=input_text))
