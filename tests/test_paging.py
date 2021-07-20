@@ -95,12 +95,24 @@ def log_response_times():
         total += v
         check.is_true(v <= 2.5) # any response over 2.5 seconds is a failure
         pages += 1
+
+    avpp = ''
+    try:
+        avpp = total/pages
+    except ZeroDivisionError:
+        avpp = "INVALID"
+
+    avtp = ''
+    try:
+        avtp = total/(pages * 1000)
+    except ZeroDivisionError:
+        avtp = "INVALID"
         pretty += f'\ncorrelationId: {k} : {v}s\n'
     logger.info(f"""
     Total time: {total} seconds
     Total pages: {pages}
-    Average response per page: {total/pages} seconds / page
-    Average response time per vessel: {total/(pages * 1000)} seconds / vessel
+    Average response per page: {avpp} seconds / page
+    Average response time per vessel: {avtp} seconds / vessel
     Response Times:
     
     {pretty}

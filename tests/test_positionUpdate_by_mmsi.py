@@ -4,7 +4,7 @@ from nested_lookup import nested_lookup as nl
 from helpers import PositionCollectionType, get_query
 
 
-@pytest.mark.postive_test
+@pytest.mark.positive
 @pytest.mark.short
 @pytest.mark.smoke_test
 @scenario(scenario_name='Get PositionUpdate by mmsi',

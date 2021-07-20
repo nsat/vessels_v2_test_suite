@@ -1,7 +1,7 @@
 from pytest_bdd import scenario, when, then
 import pytest
 from nested_lookup import nested_lookup as nl
-from helpers import v1_request, get_query
+from helpers import get_query
 import pytest_check as check
 
 
