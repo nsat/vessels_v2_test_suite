@@ -7,7 +7,7 @@ import csv
 
 RESPONSE_TIMES: dict = dict()
 
-@pytest.mark.skip
+
 @pytest.mark.long
 @pytest.mark.positive_test
 @pytest.mark.smoke_test

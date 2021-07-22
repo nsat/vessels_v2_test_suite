@@ -4,7 +4,7 @@ from nested_lookup import nested_lookup as nl
 from helpers import get_route_query
 import pytest_check as check
 
-@pytest.mark.skip
+
 @pytest.mark.short
 @pytest.mark.positive_test
 @pytest.mark.smoke_test
@@ -13,7 +13,7 @@ import pytest_check as check
 def test_valid_input():
     pass
 
-@pytest.mark.skip
+
 @pytest.mark.short
 @pytest.mark.negative_test
 @scenario(scenario_name='Invalid mmsi, locode origin, locode destination, piracy, channel combos',
