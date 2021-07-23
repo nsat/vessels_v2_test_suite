@@ -10,7 +10,7 @@ from loguru import logger
 @pytest.mark.short
 @pytest.mark.smoke_test
 @scenario(scenario_name='Restrict by mmsi',
-          feature_name="data_plan_mmsi.feature")
+          feature_name="data_plan_maritime_vessels_graphql.feature")
 def test_data_plan_mmsi():
     pass
 

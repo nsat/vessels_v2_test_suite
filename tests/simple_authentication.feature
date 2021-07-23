@@ -12,6 +12,12 @@ Feature: The service will provide a mechanism for authentication
 
       Out of Scope:
         - any kind of data plan limitations
+        - data_plan_maritime_vessels_graphql_suppliers
+        - data_plan_maritime_vessels_graphql_ship_type
+        - data_plan_maritime_vessels_graphql_history_days
+        - data_plan_maritime_vessels_graphql_mmsi
+        - data_plan_maritime_vessels_graphql_imo
+
 
   Scenario Outline: Request with invalid authentication token
     When the gql client is authenticated by an "<authorization_token>"
