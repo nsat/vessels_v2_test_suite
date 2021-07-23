@@ -1,7 +1,7 @@
 from pytest_bdd import scenario, when, then
 import pytest
 from helpers import get_query
-from datetime import datetime
+from datetime import datetime, timedelta
 from loguru import logger
 import csv
 
@@ -26,7 +26,7 @@ def get_cursor(full_auth_client):
     return response, cursor_return_time
 
 
-@then("the cursor will be available for 5 minutes")
+@then("the cursor will be available for 1 hour")
 def verify_timeout(get_cursor, full_auth_client):
     logger.debug("PAGING STARTED")
     global RESPONSE_TIMES
@@ -81,10 +81,11 @@ def verify_timeout(get_cursor, full_auth_client):
                 #logger.info(f"Page: {pages}, response time: {response_time} ")
 
         except BaseException as e:
+            end_time = datetime.utcnow()
             msg = f"""" 
             -------------
             CURSOR START: {cursor_return_time}
-            CURSOR END: {datetime.utcnow()}
+            CURSOR END: {end_time}
             -------------
             Average: {av} seconds / page
             
@@ -94,4 +95,4 @@ def verify_timeout(get_cursor, full_auth_client):
             ERROR: {e}
             """
             logger.error(msg)
-            raise
+            assert end_time - cursor_return_time < timedelta(hours=1.1)  # slight slop
