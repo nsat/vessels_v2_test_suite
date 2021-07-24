@@ -2,14 +2,16 @@
 Feature: Ability to obtain static vessel data for specified by flag
   From PRD:
         -  The gQL endpoint allows filtering by Flag(s)
+        - See flags: https://gist.github.com/tadast/8827699
   Test:
       In Scope:
-          - Multiple flags, 5 chosen at random
+          - FLAGS = ["UZ", "ES", "TW", "CN", "US"]
           - the flag(s) for input are specified in the code only, not as examples here
 
       Out of Scope:
           - null flag
           - invalid flags
+          - flags not listed In Scope
           - if any optional data returned is null, it is ignored
           - compare to v1 results
 
