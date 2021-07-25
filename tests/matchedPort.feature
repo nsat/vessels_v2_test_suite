@@ -17,8 +17,15 @@ Feature: Search for port information
     Examples:
       |text                   |
       |New York               |
-      |San Fancisco           |
+      |San Francisco          |
       |PALMA DE MALLORCA      |
+      |aa                     |
+      |bb                     |
+      |fred                   |
+      |wilma                  |
+      |BEAMY                  |
+      |USNYX                  |
+      |MALLORCA               |
 
  Scenario Outline:  text supplied does not meet regex requirements
     When search "<text>" is provided

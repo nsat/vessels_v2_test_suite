@@ -197,7 +197,7 @@ def get_query(input_text=''):
 def get_route_query(input_text=''):
     q: str = f"""
      query {{ 
-        route{input_text}{{
+        vesselRoute{input_text}{{
              journey{{
                 ...RouteDetails
             }}
