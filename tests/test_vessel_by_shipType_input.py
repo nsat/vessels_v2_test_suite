@@ -47,6 +47,12 @@ def validate_ship_type(get_single_shipType_response):
         if s_type != shipType:
             logger.error(f"LOOKING FOR {shipType}")
             logger.error(f"FOUND THIS ONE INSTEAD: {s_type}\n")
+            vessels = nl('vessel', response)
+            # get the specific bad record
+            for vessel in vessels:
+                if s_type in vessel:
+                    logger.error(f"THIS IS THE BAD RECORD\n{vessel}")
+            logger.error("----------------\nTHIS IS THE ENTIRE RESPONSE\n")
             logger.error(response)
         check.is_true(s_type == shipType)
 
@@ -75,4 +81,14 @@ def validate_ship_types(get_multi_shipTypes_response):
     response, ship_list = get_multi_shipTypes_response
     result_shipTypes: list = nl('shipType', response)
     for s_type in result_shipTypes:
+        if s_type not in ship_list:
+            logger.error(f"LOOKING FOR ONE OF THESE: {ship_list}")
+            logger.error(f"FOUND THIS ONE INSTEAD: {s_type}\n")
+            vessels = nl('vessel', response)
+            # get the specific bad record
+            for vessel in vessels:
+                if s_type in vessel:
+                    logger.error(f"THIS IS THE BAD RECORD\n{vessel}")
+            logger.error("----------------\nTHIS IS THE ENTIRE RESPONSE\n")
+            logger.error(response)
         check.is_in(s_type, ship_list)
