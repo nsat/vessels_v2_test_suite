@@ -1,12 +1,17 @@
 # Created by brucebookman at 7/5/21
-Feature: Ability to get vessel history static fields by time range
+Feature: Get positionUpdate by lastPositionUpdate
   Test:
         In Scope:
-            - timestamp returned is within spec, the test will pass
+          - Range no greater than 30 days (data plan default)
+          - Specify:
+            - Start only (29 days ago)
+            - Start and End (29 days ago, and today)
+            - Start beyond today (negative case)
+            - End only (negative case)
 
         Out of Scope:
-            - if any optional data returned is null, it is ignored
             - history days limits via auth token
+            - history beyond 29 days (allow for 1 timezone day slop)
             - Paging, only a single page or 1000 records is verified
             - History before 2021-05-01
             - compare to v1 results
@@ -15,7 +20,7 @@ Feature: Ability to get vessel history static fields by time range
     Given an authenticated gql client with full access
 
 
-  Scenario: Period, no greater than 30 days, includes both start and end times
+  Scenario: Request positionUpdate by start and end dates
     When a start time and an end time are supplied as query input
     Then all objects returned will have a timestamp within the time range
 
@@ -31,5 +36,9 @@ Feature: Ability to get vessel history static fields by time range
 
 
   Scenario: Period includes start time prior to today and end time beyond today
-     When an end time beyond today is supplied as query input
-     Then all vesselPosition objects returned will have a timestamp within 30 days of the start time
+     When a start date prior to today and end date beyond today are provided
+     Then all positionUpdate objects returned will have a timestamp within 30 days of the start time
+
+  Scenario: Period includes end only
+    When only an end time is supplied
+    Then the response will contain an appropriate error

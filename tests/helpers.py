@@ -236,33 +236,6 @@ def get_route_query(input_text=''):
     return gql(qn)
 
 
-
-def handle_time(stamp):
-    """
-    Converts stamp to datetime
-    datetime.strftime(datetime.strptime(str(td), "%H:%M:%S")
-    """
-    result: str = ''
-    if type(stamp) == str and stamp:
-        try:
-            result = datetime.fromtimestamp(int(stamp)).strftime('%Y-%m-%d %H:%M:%S')
-        except ValueError:
-            return ''
-    elif type(stamp) == timedelta and stamp:
-        try:
-            result = datetime.strftime(datetime.strptime(str(stamp), '%Y-%m-%d %H:%M:%S'))
-        except Exception as e:
-            logger.error(e)
-    elif stamp:
-        try:
-            result = stamp.strftime('%Y-%m-%d %H:%M:%S')
-        except ValueError:
-            return ''
-    else:
-        return ''
-    return result
-
-
 def write_orphans(data):
     log: str = get_settings()['in_v1_not_v2_log']
     d: dict = dict()
