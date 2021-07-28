@@ -1,7 +1,6 @@
 from pytest_bdd import scenario, when, then
 import pytest
 import pytest_check as check
-from nested_lookup import nested_lookup as nl
 from datetime import datetime
 from loguru import logger
 from query_sets import query_sets
