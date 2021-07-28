@@ -92,3 +92,21 @@ class GetQuery(object):
             }}
         """
         return gql(q)
+
+
+    def get_port_gql_query(self, input_text=''):
+        q: str = f"""
+               query {{
+                   port{input_text}
+                   {{
+                       name
+                       unlocode
+                       centerPoint {{
+                             latitude
+                             longitude
+                           }}
+                   }}
+               }}
+           """
+        return gql(q)
+

@@ -1,6 +1,6 @@
 from pytest_bdd import scenario, when, then
 import pytest
-from helpers import get_port_query
+from query_sets import query_sets
 import pytest_check as check
 from nested_lookup import nested_lookup as nl
 
@@ -16,16 +16,18 @@ def test_valid_locode():
 @pytest.mark.short
 @pytest.mark.negative_test
 @scenario(scenario_name='Invalid port',
-          feature_name="port_by_locode.feature")
+          feature_name="port_by_locoweed.feature")
 def test_invalid_locode():
     pass
+
 
 @pytest.fixture
 @when('a "<UNLOCODE>" is provided for input')
 def get_port(full_auth_client, UNLOCODE):
+    qs = query_sets.GetQuery()
     input_text = f"""(unlocode: "{UNLOCODE}")"""
     try:
-        response = full_auth_client.execute(get_port_query(input_text=input_text))
+        response = full_auth_client.execute(qs.get_port_gql_query(input_text=input_text))
     except BaseException as e:
         return e
     return response
