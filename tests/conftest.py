@@ -3,9 +3,8 @@ from gql.transport.requests import RequestsHTTPTransport
 from pytest_bdd import given, when
 import pytest
 from loguru import logger
-from helpers import get_query, get_settings
-from datetime import datetime, timedelta
 import requests.exceptions
+from utilities import helpers
 
 logger.add('vessels2.log', rotation="500 MB", retention="10 days", level='DEBUG')
 
@@ -40,7 +39,8 @@ def pytest_bdd_step_error(request, feature, scenario, step, step_func, step_func
 @given("A GraphQL endpoint", target_fixture='get_endpoint')
 def get_endpoint():
     """Returns the endpoint in the dictionary from get_settings"""
-    return get_settings()['endpoint_under_test']
+    settings = helpers.get_settings()
+    return settings['endpoint_under_test']
 
 
 @pytest.fixture
@@ -50,11 +50,12 @@ def full_auth_client(get_full_access_token):
     :param get_full_access_token: pytest fixture returns a token allowing full api
     :rtype gql client: with full access
     """
+    settings = helpers.get_settings()
     authorization_token = get_full_access_token
     headers = dict()
     headers['Authorization'] = f'Bearer {authorization_token}'
     transport = RequestsHTTPTransport(
-        url=get_settings()['endpoint_under_test'],
+        url=settings['endpoint_under_test'],
         headers=headers,
         verify=True,
         retries=3,
@@ -65,7 +66,8 @@ def full_auth_client(get_full_access_token):
 
 @pytest.fixture
 def get_full_access_token():
-    return get_settings()['full_access_token']
+    settings = helpers.get_settings()
+    return settings['full_access_token']
 
 
 @pytest.fixture

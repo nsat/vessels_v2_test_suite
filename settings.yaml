@@ -1,5 +1,3 @@
-#endpoint_under_test: 'https://staphql.ais.spire.com/'
-# endpoint_under_test: 'https://api.staging.maritime.spire.sh/federation-gateway' # OLD federated staging
 endpoint_under_test: 'https://api.staging.maritime.spire.sh/graphql'
 full_access_token: 'k6qLvUxATNeqOJw957NhYhfr6iIQCfWX'
 # Location to write test results

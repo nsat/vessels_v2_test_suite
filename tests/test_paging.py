@@ -1,120 +1,46 @@
 from pytest_bdd import scenario, when, then
 import pytest
-from helpers import get_query
-from datetime import datetime
+from utilities import paging
+from query_sets import query_sets
 from loguru import logger
-import pytest_check as check
-
-RESPONSE_TIMES: dict = dict()
 
 
-@pytest.mark.positive_test
+
 @pytest.mark.long
+@pytest.mark.positive_test
 @pytest.mark.smoke_test
-@scenario(scenario_name='Request every vessel and all possible static data',
+@scenario(scenario_name='Request for entire fleet allows paging all results',
           feature_name="paging.feature")
 def test_paging():
     pass
 
 
 @pytest.fixture
-@when("a request for all vessels is executed")
-def get_first_page(full_auth_client):
-    response: dict = full_auth_client.execute(get_query())
+@when("a response from a query on all vessel nodes is returned")
+def get_response(full_auth_client):
+    qs = query_sets.GetQuery()
+    gql_query = qs.get_vessels_gql_query()
+    response = full_auth_client.execute(gql_query)
     return response
 
 
-@then("the fields in the ResponseMetadata can be used to page through all vessel")
-def paging(get_first_page, full_auth_client):
-    logger.debug("PAGING STARTED")
-    global RESPONSE_TIMES
-    data = get_first_page
-    metadata = data['vessels']['metadata']
-    hasMore = metadata['hasMore']
-    cursor = metadata['cursor']
-    after = metadata['after']
-    pages: int = 0
-    while hasMore:
+@then("paging can occur")
+def verify_paging(get_response, full_auth_client):
+    pg = paging.Paging(get_response)
+    query_text = query_sets.GetQuery().get_query_text()
+    page = 0
+
+    while True:
         try:
-            pages += 1
-            logger.debug(f"PAGE: {pages}")
-            start_time = datetime.now()
-            input_text = f'(_after: "{after}" _cursor: "{cursor}")'
-            response = full_auth_client.execute(get_query(input_text=input_text))
-            end_time = datetime.now()
-            r = end_time - start_time
-            response_time = r.total_seconds()
-            check.is_true(response)
-            vessels: list = response['vessels']['vessels']
-            metadata = response['vessels']['metadata']
-            hasMore = metadata['hasMore'] 
-            msg = f"""
-            Completed pages: {pages}
-            Has more: {hasMore}
-            Current page response time: {response_time} seconds
-            """
-            logger.info(msg)
-            _validate(vessels)
-            if hasMore:
-                after = metadata['after']
-                cursor = str(metadata['cursor'])
-                correlationId = metadata['correlationId']
-                RESPONSE_TIMES[correlationId] = response_time
-        except TypeError as e:
-            logger.error(msg + '\n' + e)
-            continue
-        except BaseException:
-            # ignore it
-            return
+            response, hasNextPage = pg.page_and_get_response(full_auth_client, query_text)
+        except BaseException as e:
+            logger.error(e)
+            raise
+        if not response or not hasNextPage:
+            assert False
+        else:
+            page += 1
+            logger.info(f"Page: {page}")
 
 
-def _validate(page: list):
-
-    logger.debug("VALIDATING")
-    for vessel in page:
-        #mmsi = vessel['vessel']['mmsi']
-        timestamp = vessel['vessel']['timestamp']
-        if not mmsi or not timestamp:
-            logger.error(f"""
-            vessel is missing mmsi or timestamp
-            {vessel}
-            """)
-        #check.is_true(mmsi)
-        check.is_true(timestamp)
-
-
-
-@then("the response time is captured and will be less than an agreed upon max")
-def log_response_times():
-    # default number of items per page is set at 1000
-    pretty: str = ''
-    total: int = 0
-    pages: int = 0
-    for k, v in RESPONSE_TIMES.items():
-        # convert strings to datetimes
-        total += v
-        check.is_true(v <= 2.5) # any response over 2.5 seconds is a failure
-        pages += 1
-
-    avpp = ''
-    try:
-        avpp = total/pages
-    except ZeroDivisionError:
-        avpp = "INVALID"
-
-    avtp = ''
-    try:
-        avtp = total/(pages * 1000)
-    except ZeroDivisionError:
-        avtp = "INVALID"
-        pretty += f'\ncorrelationId: {k} : {v}s\n'
-    logger.info(f"""
-    Total time: {total} seconds
-    Total pages: {pages}
-    Average response per page: {avpp} seconds / page
-    Average response time per vessel: {avtp} seconds / vessel
-    Response Times:
-    
-    {pretty}
-    """)
 
