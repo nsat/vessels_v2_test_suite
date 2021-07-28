@@ -1,98 +1,68 @@
 from pytest_bdd import scenario, when, then
 import pytest
-from helpers import get_query
-from datetime import datetime, timedelta
+from utilities import paging, helpers
+from query_sets import query_sets
 from loguru import logger
-import csv
+from datetime import datetime, timedelta
+from gql import gql
 
-RESPONSE_TIMES: dict = dict()
+START = datetime.utcnow()
+qs = query_sets.GetQuery()
 
 
 @pytest.mark.long
 @pytest.mark.positive_test
 @pytest.mark.smoke_test
-@scenario(scenario_name='Cursor time out',
+@scenario(scenario_name='Ping for cursor every 1 minute',
           feature_name="cursor_timeout.feature")
 def test_cursor_timeout():
     pass
 
 
 @pytest.fixture
-@when("a paging cursor is returned")
-def get_cursor(full_auth_client):
-    response = full_auth_client.execute(get_query())
-    cursor_return_time = datetime.utcnow()
-    logger.info(f"START CURSOR: {cursor_return_time}")
-    return response, cursor_return_time
+@when("a query includes request for endCursor")
+def get_response_w_cursor(full_auth_client):
+    gql_query = qs.get_vessels_gql_query()
+    response = full_auth_client.execute(gql_query)
+    return response
 
 
-@then("the cursor will be available for 1 hour")
-def verify_timeout(get_cursor, full_auth_client):
-    logger.debug("PAGING STARTED")
-    global RESPONSE_TIMES
-    data, cursor_return_time = get_cursor
-    metadata: dict = data['vessels']['metadata']
-    hasMore: bool = metadata['hasMore']
-    after: str = metadata['after']
-    cursor: str = metadata['cursor']
-    pages: int = 0
-    while hasMore:
+@pytest.fixture
+@when("sending a request that includes the endCursor every minute")
+def ping_cursor(get_response_w_cursor, full_auth_client):
+    response = get_response_w_cursor
+    pg = paging.Paging(response=response)
+    endCursor, hasNextPage = pg.get_pageInfo_elements()
+
+    insert_text = f'after: "{endCursor}" '
+    txt = qs.get_query_text()
+    new_query = helpers.insert_into_query_header(query=txt, insert_text=insert_text)
+    while True:
+        # do not allow ping forever
+        if datetime.utcnow() - START > timedelta(minutes=70):
+            return datetime.utcnow()
+
+        endCursor, hasNextPage = pg.get_pageInfo_elements()
+        if not endCursor or not hasNextPage:
+            return datetime.utcnow()
         try:
-            pages += 1
-            # logger.debug(f"PAGE: {pages}")
-            start_time = datetime.now()
-            input_text = f'(_after: "{after}" _cursor: "{cursor}")'
-            response = full_auth_client.execute(get_query(input_text=input_text))
-            end_time = datetime.now()
-            r = end_time - start_time
-            response_time = r.total_seconds()
-            metadata = response['vessels']['metadata']
-            hasMore = metadata['hasMore']
-            total: int = 0
-            response_info = ''
-            if RESPONSE_TIMES:
-                total = 0
-                for k, v in RESPONSE_TIMES.items():
-                    response_info += f'correlationId: {k}, {v}\n'
-                    total += v
-            av: float
-            try:
-                av: float = total / pages
-            except ZeroDivisionError as e:
-                logger.error("IGNORING DIV BY ZERO")
-                logger.error(e)
-                logger.error(RESPONSE_TIMES)
-                continue
-            if hasMore:
-                after = metadata['after']
-                cursor = str(metadata['cursor'])
-                correlationId = metadata['correlationId']
-                RESPONSE_TIMES[correlationId] = response_time
-                try:
-                    with open('response_times.csv', 'a+') as f:
-                        writer = csv.writer(f)
-                        if correlationId and response_time:
-                            writer.writerow([datetime.utcnow(),
-                                             pages,
-                                             response_time])
-                except FileNotFoundError as e:
-                    raise
-
-                #logger.info(f"Page: {pages}, response time: {response_time} ")
-
+            response = full_auth_client.execute(gql(new_query))
+            pg = paging.Paging(response=response)
         except BaseException as e:
-            end_time = datetime.utcnow()
-            msg = f"""" 
-            -------------
-            CURSOR START: {cursor_return_time}
-            CURSOR END: {end_time}
-            -------------
-            Average: {av} seconds / page
-            
-            Response Times:
-            {response_info}
-            
-            ERROR: {e}
-            """
-            logger.error(msg)
-            assert end_time - cursor_return_time < timedelta(hours=1.1)  # slight slop
+            logger.error(e)
+            raise
+
+
+@then("the cursor will time out after 1 hour")
+def verify_timeout(ping_cursor):
+    end = ping_cursor
+    # add a tiny bit of slop for time zone oddities etc
+    diff = end - START
+    logger.debug(f"""
+    Start: {START}
+    End: {end}
+    """)
+    if diff > timedelta(minutes=63):
+        assert False
+    else:
+        assert True
