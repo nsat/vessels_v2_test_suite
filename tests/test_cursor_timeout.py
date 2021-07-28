@@ -35,7 +35,7 @@ def ping_cursor(get_response_w_cursor, full_auth_client):
     endCursor, hasNextPage = pg.get_pageInfo_elements()
 
     insert_text = f'after: "{endCursor}" '
-    txt = qs.get_query_text()
+    txt = qs.get_vessel_query_text()
     new_query = helpers.insert_into_query_header(query=txt, insert_text=insert_text)
     while True:
         # do not allow ping forever

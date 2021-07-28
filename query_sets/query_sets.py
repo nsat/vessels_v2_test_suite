@@ -64,9 +64,31 @@ class GetQuery(object):
         pass
 
 
-    def get_query_text(self):
+    def get_vessel_query_text(self):
         return self._query_text
 
 
     def get_vessels_gql_query(self):
-        return gql(self.get_query_text())
+        return gql(self.get_vessel_query_text())
+
+
+    def get_matched_port_gql_query(self, input_text=''):
+        q: str = f"""
+            query {{
+                matchedPort{input_text}
+                {{
+                    matchScore
+                    port {{
+                        name
+                        unlocode
+                        centerPoint {{
+                            latitude
+                            longitude
+                        }}
+
+                    }}
+                }}
+
+            }}
+        """
+        return gql(q)

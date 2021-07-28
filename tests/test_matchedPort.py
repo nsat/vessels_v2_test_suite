@@ -1,7 +1,6 @@
 from pytest_bdd import scenario, when, then
 import pytest
-from nested_lookup import nested_lookup as nl
-from helpers import get_matched_port_query
+from query_sets import query_sets
 import pytest_check as check
 from loguru import logger
 
@@ -25,10 +24,11 @@ def test_invalid_input():
 @pytest.fixture
 @when('search "<text>" is provided')
 def get_response(full_auth_client, text):
+    qs = query_sets.GetQuery()
     input_text = f"""(text: "{text}")"""
     e = ''
     try:
-        response = full_auth_client.execute(get_matched_port_query(input_text=input_text))
+        response = full_auth_client.execute(qs.get_matched_port_gql_query(input_text=input_text))
     except BaseException as e:
         return e
     return response, str(e)

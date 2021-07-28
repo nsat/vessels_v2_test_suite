@@ -27,7 +27,7 @@ def get_response(full_auth_client):
 @then("paging can occur")
 def verify_paging(get_response, full_auth_client):
     pg = paging.Paging(get_response)
-    query_text = query_sets.GetQuery().get_query_text()
+    query_text = query_sets.GetQuery().get_vessel_query_text()
     page = 0
 
     while True:

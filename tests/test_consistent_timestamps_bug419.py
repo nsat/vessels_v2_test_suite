@@ -31,7 +31,7 @@ def validate(get_full_fleet, full_auth_client):
     response = get_full_fleet
 
     pg = paging.Paging(response)
-    query_text = query_sets.GetQuery().get_query_text()
+    query_text = query_sets.GetQuery().get_vessel_query_text()
     page = 0
 
     while True:
