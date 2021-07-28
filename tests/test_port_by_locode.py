@@ -23,7 +23,7 @@ def test_invalid_locode():
 @pytest.fixture
 @when('a "<UNLOCODE>" is provided for input')
 def get_port(full_auth_client, UNLOCODE):
-    input_text = f"""(unlocode: {UNLOCODE})"""
+    input_text = f"""(unlocode: "{UNLOCODE}")"""
     try:
         response = full_auth_client.execute(get_port_query(input_text=input_text))
     except BaseException as e:

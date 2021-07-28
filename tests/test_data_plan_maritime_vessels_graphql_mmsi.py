@@ -10,7 +10,7 @@ from loguru import logger
 @pytest.mark.short
 @pytest.mark.smoke_test
 @scenario(scenario_name='Restrict by mmsi',
-          feature_name="data_plan_maritime_vessels_graphql.feature")
+          feature_name="data_plan_maritime_vessels_graphql_mmsi.feature")
 def test_data_plan_mmsi():
     pass
 
@@ -30,12 +30,14 @@ def verify_filtering(get_client, get_vars):
     # a generic query should only include mmsi that are authorized
     response = client.execute(get_query())
     mmsi_outputs = nl('mmsi', response)
+    for mmsi in mmsi_outputs:
+        if not str(mmsi) in mmsi_inputs:
+            logger.error(f"""
+            Found: {mmsi}
+            Looking for: {mmsi_outputs}
+            """)
+            check.is_true(False)
+        check.is_true(True)
 
-    # Did get the specific mmsi
-    for output in mmsi_outputs:
-        found = False
-        for i in mmsi_inputs:
-            if str(output) == i:
-                found = True
-        check.is_true(found)
+
 

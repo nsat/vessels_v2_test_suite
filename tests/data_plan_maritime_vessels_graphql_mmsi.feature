@@ -3,6 +3,11 @@ Feature: Restrict result sets through Apigee custom attributes
   In Scope:
     - data plan w mmsi limits
 
+  Note, for easy lookup
+    LOo6r1A07Q3jbf3ZY1o9C52UVneX0bRb:
+      https://apigee.com/organizations/spire/apps/details/d8035b28-83a0-476a-b495-d1b21d46d9ef
+    QPklqSQJZQAwkTRuB2acJ83SNwPtpChf:
+      https://apigee.com/organizations/spire/apps/details/baa88302-d99f-49d1-9d5f-c3b78d005027
 
   Scenario Outline: Restrict by mmsi
     When the gql client is authenticated by an "<authorization_token>"

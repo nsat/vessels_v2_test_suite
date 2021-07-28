@@ -18,6 +18,7 @@ Feature: Ability to request port data by unlocode
     |CNTZO    |
     |KRINC    |
     |TWKHH    |
+    |US NYC   |
 
   Scenario Outline: Invalid port
     When a "<UNLOCODE>" is provided for input
@@ -25,4 +26,4 @@ Feature: Ability to request port data by unlocode
     Examples:
     |UNLOCODE |
     |CNTO     |
-    |RXNCZ    |
+    |RXNC1    |
