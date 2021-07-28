@@ -4,9 +4,7 @@ Feature: All timestamps returned will be  ISO8601 UTC (2021-07-25T14:12:32Z .. %
 
   In Scope
     - Every datetime returned
-    - 1000 records checked
-  Out of Scope
-    - no paging
+    - Query is for entire fleet, will page through entire result set
 
   Background:
     Given an authenticated gql client with full access
