@@ -1,4 +1,5 @@
 from gql import gql
+from loguru import logger
 
 
 class GetQuery(object):
@@ -16,7 +17,7 @@ class GetQuery(object):
                     }
                     nodes {
                       ingestionTimestamp
-                      vessel {
+                      staticInfo {
                         flag
                         name
                         class
@@ -27,15 +28,17 @@ class GetQuery(object):
                         mmsi
                         shipType
                         dimensions {
-                          a
-                          b
-                          c
-                          d
                           width
                           length
                         }
+                         antennaDistances {
+                              a
+                              b
+                              c
+                              d
+                            }
                       }
-                      positionUpdate {
+                      lastPositionUpdate {
                         accuracy
                         heading
                         latitude
@@ -48,10 +51,10 @@ class GetQuery(object):
                         rot
                         speed
                       }
-                      voyage {
-                        eta
+                      currentVoyage {
+                        reportedETA
                         draught
-                        destination
+                        reportedDestination
                         ingestionTimestamp
                         timestamp
                       }
@@ -60,8 +63,20 @@ class GetQuery(object):
                 }      
         """
 
-    def get_query_from_file(self):
-        pass
+    def get_query_from_file(self, file):
+        """
+        Parameters: file(str) full path to query file
+        Returns: query(str)
+        """
+        query: str = str()
+        try:
+            with open(file, 'r') as f:
+                query = f.read()
+        except FileNotFoundError as e:
+            logger.error(f"Can not find query text file: {file} ")
+            raise
+        return query
+
 
 
     def get_vessel_query_text(self):

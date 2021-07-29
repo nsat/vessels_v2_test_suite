@@ -8,12 +8,6 @@ class Paging(object):
     def __init__(self, response):
         self._response = response
 
-    def get_paging_input_string(self, first=1000, after=''):
-        return f"""
-        first: {first}
-        after: "{after}"
-        """
-
     def get_pageInfo_elements(self):
         """
         :returns: endCursor, hasNext
